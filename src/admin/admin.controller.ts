@@ -1,34 +1,54 @@
-import { Controller, Get, Post, Body, Patch, Param, Delete } from '@nestjs/common';
+// src/admin/admin.controller.ts
+import {
+  Body,
+  Controller,
+  Delete,
+  Get,
+  Param,
+  Patch,
+  Post,
+  ValidationPipe,
+  UseGuards,
+} from '@nestjs/common';
 import { AdminService } from './admin.service';
-import { CreateAdminDto } from './dto/create-admin.dto';
+import { RegisterAdminDto } from './dto/register-admin.dto';
 import { UpdateAdminDto } from './dto/update-admin.dto';
+import { ResetPasswordDto } from './dto/reset-password.dto';
 
-@Controller('admin')
+@Controller('v1/admin')
 export class AdminController {
   constructor(private readonly adminService: AdminService) {}
 
-  @Post()
-  create(@Body() createAdminDto: CreateAdminDto) {
-    return this.adminService.create(createAdminDto);
-  }
-
-  @Get()
-  findAll() {
-    return this.adminService.findAll();
+  @Post('register')
+  async register(@Body(ValidationPipe) dto: RegisterAdminDto) {
+    return this.adminService.register(dto);
   }
 
   @Get(':id')
-  findOne(@Param('id') id: string) {
-    return this.adminService.findOne(+id);
+  async fetch(@Param('id') id: string) {
+    return this.adminService.fetch(id);
+  }
+
+  @Get()
+  async fetchAll() {
+    return this.adminService.fetchAll();
   }
 
   @Patch(':id')
-  update(@Param('id') id: string, @Body() updateAdminDto: UpdateAdminDto) {
-    return this.adminService.update(+id, updateAdminDto);
+  async update(
+    @Param('id') id: string,
+    @Body(ValidationPipe) dto: UpdateAdminDto,
+  ) {
+    return this.adminService.update(id, dto);
   }
 
   @Delete(':id')
-  remove(@Param('id') id: string) {
-    return this.adminService.remove(+id);
+  async delete(@Param('id') id: string) {
+    return this.adminService.delete(id);
+  }
+
+  @Post('reset-password')
+  async resetPassword(@Body(ValidationPipe) dto: ResetPasswordDto) {
+    return this.adminService.resetPassword(dto);
   }
 }
